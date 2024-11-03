@@ -1,1 +1,6 @@
-export class CreateProductDto {}
+export class CreateProductDto {
+    readonly name: string;
+    readonly price: number;
+    readonly type: string;
+  }
+  

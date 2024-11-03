@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { Store } from '../stores/entities/store.entity';
 
@@ -61,15 +61,19 @@ export class ProductsStoresService {
       where: { id: productId },
       relations: ['stores'],
     });
-    const stores = await this.storesRepository.findByIds(storeIds);
-
+    const stores = await this.storesRepository.find({
+      where: { id: In(storeIds) },
+    });
+  
     if (!product || stores.length !== storeIds.length) {
       throw new NotFoundException('Producto o tiendas no encontrados');
     }
-
+  
     product.stores = stores;
     await this.productsRepository.save(product);
   }
+  
+  
 
   async deleteStoreFromProduct(productId: number, storeId: number): Promise<void> {
     const product = await this.productsRepository.findOne({
